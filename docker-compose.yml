@@ -1,0 +1,39 @@
+name: enclaude
+
+services:
+  claude-code:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: enclaude:latest
+    container_name: enclaude
+    restart: "no"
+    user: claude
+    working_dir: /workspace
+    volumes:
+      - enclaude-workspace:/workspace
+      - enclaude-config:/home/claude/.claude
+    networks:
+      - enclaude-net
+    deploy:
+      resources:
+        limits:
+          memory: ${SANDBOX_MEMORY_LIMIT:-8g}
+          cpus: "${SANDBOX_CPU_LIMIT:-4}"
+    command: sleep infinity
+    healthcheck:
+      test: ["CMD-SHELL", "command -v claude > /dev/null"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  enclaude-workspace:
+    name: enclaude-workspace
+  enclaude-config:
+    name: enclaude-config
+
+networks:
+  enclaude-net:
+    driver: bridge
