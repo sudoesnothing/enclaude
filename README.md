@@ -4,7 +4,7 @@ An ephemeral Docker sandbox for running [Claude Code](https://claude.ai/code) in
 
 Each session runs in a fresh container that is torn down on exit. Workspace data
 persists across sessions in named Docker volumes, so your work is never lost.
-Your host filesystem stays clean — no bind mounts, no Docker socket access.
+Your host filesystem stays clean: *no bind mounts, no Docker socket access*.
 
 > Previously released as [claude-code-sandbox](https://github.com/sudoesnothing/claude-code-sandbox). That repo is archived for historical reference.
 
@@ -54,7 +54,7 @@ On first run, the image is built automatically. Inside the container:
 claude          # complete the OAuth flow in your browser
 ```
 
-Credentials are saved in a Docker volume and persist across sessions — you only
+Credentials are saved in a Docker volume and persist across sessions. You only
 need to authenticate once (until the token expires).
 
 Type `exit` to end the session. The container is removed; your workspace and
@@ -98,8 +98,8 @@ The container user has sudo access for installing tools during a session:
 sudo apt-get update && sudo apt-get install -y python3
 ```
 
-Packages installed this way are ephemeral — they exist only for the current
-session. To make packages permanent, add them to the `Dockerfile` and rebuild.
+Packages installed this way are ephemeral. *They exist only for the current
+session.* To make packages **permanent**, add them to the `Dockerfile` and rebuild.
 
 ---
 
@@ -162,7 +162,7 @@ docker volume rm enclaude-config
 
 **Why not just use VS Code Dev Containers?**
 
-Dev Containers are great — Enclaude even supports them. But Enclaude is
+Dev Containers are great - *Enclaude even supports them*. But Enclaude is
 CLI-first and IDE-agnostic: it works from any terminal without VS Code.
 Containers are also ephemeral by default (removed on exit), which Dev
 Containers are not. And everything is purpose-built for Claude Code — volumes,
@@ -172,7 +172,7 @@ entrypoint, auth persistence — so there's nothing to configure.
 
 For personal use, yes. Enclaude isolates Claude Code from your host filesystem,
 blocks Docker socket access, and enforces resource limits. It is not designed
-to contain a hostile workload or meet enterprise compliance requirements — it's
+to contain a hostile workload or meet enterprise compliance requirements - *yet*. It's
 a development tool for individual developers who want reasonable guardrails.
 See the [Roadmap](#roadmap) for planned hardening (seccomp, egress filtering).
 
@@ -182,16 +182,7 @@ See the [Roadmap](#roadmap) for planned hardening (seccomp, egress filtering).
 
 Planned features for future releases:
 
-- **Multi-user sessions** — per-user containers, volumes, networks, and credential injection. See [docs/multi-user-deployment.md](docs/multi-user-deployment.md) for the planned design.
-- **Custom seccomp profile** — restrict syscalls to only what Claude Code needs
-- **Egress filtering** — proxy sidecar to allowlist only `api.anthropic.com`
-- **External secrets managers** — Vault, Bitwarden integration. See [docs/secrets-management.md](docs/secrets-management.md).
-
----
-
-## Credits
-
-The `CLAUDE.md` in this repo is a simplified template based on the **WAT (Workflows / Agents / Tools)** framework. Credit to [Nate Herk](https://www.youtube.com/@nateherk) for the inspiration — his work in agentic AI and automation is worth checking out if you want to go deeper with Claude Code and practical AI workflows.
-
-The full, ready-to-use WAT `CLAUDE.md` is available in the Classroom of his free community:
-[AI Automation Society](https://skool.com/ai-automation-society/about)
+- **Multi-user sessions** | per-user containers, volumes, networks, and credential injection. See [docs/multi-user-deployment.md](docs/multi-user-deployment.md) for the planned design.
+- **Custom seccomp profile** | restrict syscalls to only what Claude Code needs
+- **Egress filtering** | proxy sidecar to allowlist only `api.anthropic.com`
+- **External secrets managers** | Vault, Bitwarden integration. See [docs/secrets-management.md](docs/secrets-management.md).
