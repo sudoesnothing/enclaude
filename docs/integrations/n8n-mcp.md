@@ -86,21 +86,22 @@ N8N_MCP_URL=https://your-n8n-instance.example.com/mcp-server/http
 On every container boot, the entrypoint script:
 
 1. Reads `N8N_MCP_TOKEN` and `N8N_MCP_URL` from the environment
-2. Writes the MCP server config to `/home/claude/.claude/settings.json`
-   (persisted in the `enclaude-config` volume)
+2. Writes the MCP server config to `/workspace/.mcp.json` (Claude Code
+   discovers this file automatically from any subdirectory; persisted
+   in the `enclaude-workspace` volume)
 3. Runs a quick health check against the endpoint
 4. Writes the result to `~/.mcp-status`, displayed on shell login
 
 The config is regenerated on every boot, so changes to `.env` take effect
 on the next restart. If the token is removed, the stale MCP entry is
-automatically cleaned from `settings.json`.
+automatically cleaned from `.mcp.json`.
 
 ---
 
 ## Disabling
 
 Remove or empty `N8N_MCP_TOKEN` in `.env` and restart the container. The
-entrypoint will remove the MCP entry from `settings.json` automatically.
+entrypoint will remove the MCP entry from `.mcp.json` automatically.
 
 ---
 
