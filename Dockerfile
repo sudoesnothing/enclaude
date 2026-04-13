@@ -33,6 +33,10 @@ RUN mkdir -p /workspace && chown claude:claude /workspace \
 
 COPY --chmod=755 scripts/setup/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
+# MCP status message on shell login
+RUN echo '# Show MCP connection status on login' >> /home/claude/.bashrc \
+    && echo '[ -f /home/claude/.mcp-status ] && cat /home/claude/.mcp-status' >> /home/claude/.bashrc
+
 USER claude
 WORKDIR /workspace
 
