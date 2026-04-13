@@ -44,25 +44,26 @@ fi
 ln -sf /home/claude/.claude/.claude.json /home/claude/.claude.json
 
 # ── n8n MCP configuration (optional) ──────────────────────
-# When N8N_MCP_TOKEN is set, writes MCP server config to the
-# persisted Claude settings file.  Runs every boot so token
-# and URL stay current with .env values.
+# When N8N_MCP_TOKEN and N8N_MCP_URL are set, writes MCP
+# config to /workspace/.mcp.json (picked up by Claude Code
+# from any subdirectory).  Runs every boot so token and URL
+# stay current with .env values.
 configure_mcp() {
-    local settings_file="/home/claude/.claude/settings.json"
+    local mcp_file="${WORKSPACE}/.mcp.json"
     local status_file="/home/claude/.mcp-status"
     local mcp_url="${N8N_MCP_URL:-}"
 
     # No token or URL → clean up any stale config, remove status file
     if [ -z "${N8N_MCP_TOKEN:-}" ] || [ -z "${mcp_url}" ]; then
-        if [ -f "$settings_file" ]; then
+        if [ -f "$mcp_file" ]; then
             node -e "
                 const fs = require('fs');
                 try {
-                    const s = JSON.parse(fs.readFileSync('$settings_file', 'utf8'));
+                    const s = JSON.parse(fs.readFileSync('$mcp_file', 'utf8'));
                     if (s.mcpServers && s.mcpServers['n8n-mcp']) {
                         delete s.mcpServers['n8n-mcp'];
                         if (Object.keys(s.mcpServers).length === 0) delete s.mcpServers;
-                        fs.writeFileSync('$settings_file', JSON.stringify(s, null, 2) + '\n');
+                        fs.writeFileSync('$mcp_file', JSON.stringify(s, null, 2) + '\n');
                     }
                 } catch {}
             "
@@ -71,23 +72,23 @@ configure_mcp() {
         return 0
     fi
 
-    # Token is set → write/merge MCP config into settings.json
+    # Token and URL are set → write/merge MCP config into .mcp.json
     node -e "
         const fs = require('fs');
-        const path = '$settings_file';
+        const path = '$mcp_file';
         const url = process.env.N8N_MCP_URL;
         const token = process.env.N8N_MCP_TOKEN;
-        let settings = {};
-        try { settings = JSON.parse(fs.readFileSync(path, 'utf8')); } catch {}
-        if (!settings.mcpServers) settings.mcpServers = {};
-        settings.mcpServers['n8n-mcp'] = {
+        let config = {};
+        try { config = JSON.parse(fs.readFileSync(path, 'utf8')); } catch {}
+        if (!config.mcpServers) config.mcpServers = {};
+        config.mcpServers['n8n-mcp'] = {
             type: 'http',
             url: url,
             headers: { Authorization: 'Bearer ' + token }
         };
-        fs.writeFileSync(path, JSON.stringify(settings, null, 2) + '\n');
+        fs.writeFileSync(path, JSON.stringify(config, null, 2) + '\n');
     "
-    chmod 600 "$settings_file"
+    chmod 600 "$mcp_file"
 
     # Health check — quick connectivity test
     local http_code
