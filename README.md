@@ -118,6 +118,17 @@ cp .env.example .env
 
 ---
 
+## Integrations (Optional)
+
+Enclaude can connect Claude Code to external [MCP](https://modelcontextprotocol.io/)
+servers. These are entirely optional and require separate setup.
+
+| Integration | Guide |
+|---|---|
+| n8n workflows via MCP | [docs/integrations/n8n-mcp.md](docs/integrations/n8n-mcp.md) |
+
+---
+
 ## Security
 
 This is a personal development tool, not an enterprise security product. The

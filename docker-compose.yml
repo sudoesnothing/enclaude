@@ -10,11 +10,15 @@ services:
     restart: "no"
     user: claude
     working_dir: /workspace
+    environment:
+      - N8N_MCP_TOKEN=${N8N_MCP_TOKEN:-}
+      - N8N_MCP_URL=${N8N_MCP_URL:-}
     volumes:
       - enclaude-workspace:/workspace
       - enclaude-config:/home/claude/.claude
     networks:
       - enclaude-net
+      - shared
     deploy:
       resources:
         limits:
@@ -37,3 +41,5 @@ volumes:
 networks:
   enclaude-net:
     driver: bridge
+  shared:
+    external: true
